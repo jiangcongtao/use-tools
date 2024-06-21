@@ -5,8 +5,8 @@ from models.ollama_models import OllamaModel
 from tools.basic_calculator import basic_calculator
 from tools.reverser import reverse_string
 from toolbox.toolbox import ToolBox
-import json
 import os
+import argparse
 
 class Agent:
     def __init__(self, tools, model_service, model_name, stop=None, debug_mode=False):
@@ -72,8 +72,6 @@ class Agent:
 
         # Generate and return the response dictionary
         agent_response_dict = model_instance.generate_text(prompt)
-        if self.model_service == OllamaModel:
-            return json.loads(agent_response_dict)
         return agent_response_dict
 
     def work(self, prompt):
@@ -94,7 +92,7 @@ class Agent:
             if tool.__name__ == tool_choice:
                 response = tool(tool_input)
 
-                print(colored(response, 'cyan'))
+                print(colored(response.strip(), 'cyan'))
                 return
                 # return tool(tool_input)
 
@@ -106,7 +104,15 @@ class Agent:
 # Example usage
 if __name__ == "__main__":
 
-    tools = [basic_calculator, reverse_string]
+    parser = argparse.ArgumentParser(description="Agent with tools")
+    parser.add_argument("--notool", action="store_true", help="Run the agent without any tools")
+    args = parser.parse_args()
+    if args.notool:
+        tools = []
+        print('No tools are loaded!')
+    else:
+        tools = [basic_calculator, reverse_string]
+        print('Loaded tools: ',  [tool.__name__ for tool in tools])
 
 
     # Uncoment below to run with OpenAI
