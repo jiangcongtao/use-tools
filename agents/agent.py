@@ -105,6 +105,7 @@ class Agent:
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Agent with tools")
+    parser.add_argument("-h", "--help", action="help", help="Show this help message and exit")
     parser.add_argument("--notool", action="store_true", help="Run the agent without any tools")
     parser.add_argument("--model", type=str, default="", help="Specify the model name")
 

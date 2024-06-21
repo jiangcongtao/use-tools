@@ -61,3 +61,15 @@ python -m agents.agent
 ```
 Then enter your query.
 
+### Get help
+```bash
+python -m agents.agent -h    
+usage: agent.py [-h] [--notool] [--model MODEL]
+
+Agent with tools
+
+options:
+  -h, --help     show this help message and exit
+  --notool       Run the agent without any tools
+  --model MODEL  Specify the model name
+```
