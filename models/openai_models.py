@@ -7,7 +7,7 @@ config_path = os.path.join(os.path.dirname(__file__), '..', 'configs', 'config.y
 load_config(config_path)
 
 class OpenAIModel:
-    def __init__(self, model, system_prompt, temperature):
+    def __init__(self, model, system_prompt, temperature, debug_mode = False):
         self.model_endpoint = 'https://api.openai.com/v1/chat/completions'
         self.temperature = temperature
         self.model = model

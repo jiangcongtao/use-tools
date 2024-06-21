@@ -5,10 +5,11 @@ from models.ollama_models import OllamaModel
 from tools.basic_calculator import basic_calculator
 from tools.reverser import reverse_string
 from toolbox.toolbox import ToolBox
-
+import json
+import os
 
 class Agent:
-    def __init__(self, tools, model_service, model_name, stop=None):
+    def __init__(self, tools, model_service, model_name, stop=None, debug_mode=False):
         """
         Initializes the agent with a list of tools and a model.
 
@@ -21,6 +22,7 @@ class Agent:
         self.model_service = model_service
         self.model_name = model_name
         self.stop = stop
+        self.debug_mode = debug_mode
 
     def prepare_tools(self):
         """
@@ -47,6 +49,9 @@ class Agent:
         tool_descriptions = self.prepare_tools()
         agent_system_prompt = agent_system_prompt_template.format(tool_descriptions=tool_descriptions)
 
+        if self.debug_mode:
+            print("SYSTEM PROMPT: ")
+            print(agent_system_prompt)
         # Create an instance of the model service with the system prompt
 
         if self.model_service == OllamaModel:
@@ -54,17 +59,21 @@ class Agent:
                 model=self.model_name,
                 system_prompt=agent_system_prompt,
                 temperature=0,
-                stop=self.stop
+                stop=self.stop,
+                debug_mode=self.debug_mode
             )
         else:
             model_instance = self.model_service(
                 model=self.model_name,
                 system_prompt=agent_system_prompt,
-                temperature=0
+                temperature=0,
+                debug_mode=self.debug_mode
             )
 
         # Generate and return the response dictionary
         agent_response_dict = model_instance.generate_text(prompt)
+        if self.model_service == OllamaModel:
+            return json.loads(agent_response_dict)
         return agent_response_dict
 
     def work(self, prompt):
@@ -101,16 +110,23 @@ if __name__ == "__main__":
 
 
     # Uncoment below to run with OpenAI
-    model_service = OpenAIModel
-    model_name = 'gpt-3.5-turbo'
+    # model_service = OpenAIModel
+    # model_name = 'gpt-3.5-turbo'
     stop = None
 
     # Uncomment below to run with Ollama
-    # model_service = OllamaModel
+    model_service = OllamaModel
     # model_name = 'llama3:instruct'
+    model_name = os.environ.get('MODEL', 'phi3:latest')
     # stop = "<|eot_id|>"
+    print('Using model: ', model_name)
 
-    agent = Agent(tools=tools, model_service=model_service, model_name=model_name, stop=stop)
+    debug_mode = False
+    debug_env = os.environ.get('DEBUG', '').lower()
+    if debug_env in ['1', 'true', 'yes']:
+        debug_mode = True
+
+    agent = Agent(tools=tools, model_service=model_service, model_name=model_name, stop=stop, debug_mode=debug_mode)
 
     while True:
         prompt = input("Ask me anything: ")

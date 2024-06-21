@@ -6,7 +6,7 @@ from utils.get_keys import load_config
 # Load configuration
 
 class OllamaModel:
-    def __init__(self, model, system_prompt, temperature=0, stop=None):
+    def __init__(self, model, system_prompt, temperature=0, stop=None, debug_mode = False):
         """
         Initializes the OllamaModel with the given parameters.
 
@@ -22,6 +22,7 @@ class OllamaModel:
         self.system_prompt = system_prompt
         self.headers = {"Content-Type": "application/json"}
         self.stop = stop
+        self.debug_mode = debug_mode
 
     def generate_text(self, prompt):
         """
@@ -35,14 +36,17 @@ class OllamaModel:
         """
         payload = {
             "model": self.model,
-            "format" "json"
+            "format": "json",
             "prompt": prompt,
             "system": self.system_prompt,
             "stream": False,
             "temperature": self.temperature,
             "stop": self.stop
         }
-
+        
+        if self.debug_mode:
+            print("PAYLOAD", payload)
+        
         try:
             request_response = requests.post(
                 self.model_endpoint, 
@@ -50,7 +54,8 @@ class OllamaModel:
                 data=json.dumps(payload)
             )
             
-            print("REQUEST RESPONSE", request_response)
+            if self.debug_mode:
+                print("REQUEST RESPONSE", request_response)
             request_response_json = request_response.json()
             response = request_response_json['response']
             # response_dict = json.loads(response)
