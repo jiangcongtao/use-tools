@@ -106,6 +106,8 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Agent with tools")
     parser.add_argument("--notool", action="store_true", help="Run the agent without any tools")
+    parser.add_argument("--model", type=str, default="", help="Specify the model name")
+
     args = parser.parse_args()
     if args.notool:
         tools = []
@@ -114,16 +116,18 @@ if __name__ == "__main__":
         tools = [basic_calculator, reverse_string]
         print('Loaded tools: ',  [tool.__name__ for tool in tools])
 
-
-    # Uncoment below to run with OpenAI
+    # Uncomment below to run with OpenAI
     # model_service = OpenAIModel
     # model_name = 'gpt-3.5-turbo'
     stop = None
 
     # Uncomment below to run with Ollama
     model_service = OllamaModel
+    if args.model:
+        model_name = args.model
+    else:
+        model_name = os.environ.get('MODEL', 'phi3:latest')
     # model_name = 'llama3:instruct'
-    model_name = os.environ.get('MODEL', 'phi3:latest')
     # stop = "<|eot_id|>"
     print('Using model: ', model_name)
 
