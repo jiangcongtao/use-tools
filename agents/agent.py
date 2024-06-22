@@ -74,6 +74,44 @@ class Agent:
         # Generate and return the response dictionary
         agent_response_dict = model_instance.generate_text(prompt)
         return agent_response_dict
+    
+    def generate(self, prompt):
+        """
+        Runs the generate_text method on the model using the system prompt and user prompt.
+
+        Parameters:
+        prompt (str): The user query to generate a response for.
+
+        Returns:
+        answer: The response from the model as a dictionary.
+        """
+
+        agent_system_prompt = "You're a helpful assistant"
+
+        if self.debug_mode:
+            print("SYSTEM PROMPT: ")
+            print(agent_system_prompt)
+        # Create an instance of the model service with the system prompt
+
+        if self.model_service == OllamaModel:
+            model_instance = self.model_service(
+                model=self.model_name,
+                system_prompt=agent_system_prompt,
+                temperature=0,
+                stop=self.stop,
+                debug_mode=self.debug_mode
+            )
+        else:
+            model_instance = self.model_service(
+                model=self.model_name,
+                system_prompt=agent_system_prompt,
+                temperature=0,
+                debug_mode=self.debug_mode
+            )
+
+        # Generate and return the response dictionary
+        response = model_instance.generate_text2(prompt)
+        return response
 
     def work(self, prompt):
         """
@@ -92,21 +130,19 @@ class Agent:
 
             for tool in self.tools:
                 if tool.__name__ == tool_choice:
-                    response = tool(tool_input)
+                    response = tool(tool_input).strip()
 
-                    print(colored(response.strip(), 'cyan'))
-                    return
-                    # return tool(tool_input)
+                    print(colored(f"[TOOL]:\n{response}", 'cyan'))
+                    return response
 
             print(colored(agent_response_dict, 'cyan'))
         else:
             print(colored(tool_input, 'cyan'))
-        return
+        return None
 
 
 # Example usage
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(description="Agent with tools")
     parser.add_argument("--notool", action="store_true", help="Run the agent without any tools")
     parser.add_argument("--model", type=str, default="", help="Specify the model name")
@@ -142,9 +178,16 @@ if __name__ == "__main__":
     agent = Agent(tools=tools, model_service=model_service, model_name=model_name, stop=stop, debug_mode=debug_mode)
 
     while True:
-        prompt = input("Ask me anything: ")
+        print(colored("Ask me anything: ", 'yellow'), end="")
+        prompt = input()
         if prompt.lower() == "exit":
             break
     
-        agent.work(prompt)
+        tool_response = agent.work(prompt)
+        if tool_response is None:
+            response = agent.generate(prompt)
+        else:
+            response = agent.generate(f"Rewrite the text and output in the human natural language.\TEXT:{tool_response}")
+ 
+        print(colored(f"[AI]:\n{response}", 'cyan'))
         print('=='*40)

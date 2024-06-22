@@ -19,9 +19,10 @@ class OpenAIModel:
             'Authorization': f'Bearer {self.api_key}'
         }
 
-
+    def generate_text2(self, prompt):
+        return "<Not Implemented>"
+    
     def generate_text(self, prompt):
-
         payload = {
                     "model": self.model,
                     "response_format": {"type": "json_object"},

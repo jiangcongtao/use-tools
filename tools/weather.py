@@ -103,7 +103,7 @@ def get_local_time(city_name):
         local_time_str = local_time.strftime("%Y-%m-%d %H:%M:%S %Z")
         print('Executed using get_local_time function')
 
-        return f"Current weather in {city} [{country}]\nLocal Time: {local_time_str}"
+        return f"Current local time in {city} [{country}]\nLocal Time: {local_time_str}"
     else:
         print(colored(f"Error: {response.status_code}", 'red'))
         os.abort()
