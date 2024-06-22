@@ -55,6 +55,13 @@ Ollama [API documentation](https://github.com/ollama/ollama/blob/main/docs/api.m
 
 3. Navigate to the bottom of the `agent.py` script and uncomment the Ollama arguments and comment out the OpenAI arguments. 
 
+### Configure API KEY
+Weather and time tools requires an API from http://api.openweathermap.org to be setup for tools to function properly.
+
+```shell
+export WEATHER_API_KEY=<YOUR API KEY>
+```
+
 ### Run Your Query In Shell
 ```bash
 python -m agents.agent
