@@ -4,6 +4,7 @@ from models.openai_models import OpenAIModel
 from models.ollama_models import OllamaModel
 from tools.basic_calculator import basic_calculator
 from tools.reverser import reverse_string
+from tools.weather import get_current_weather
 from toolbox.toolbox import ToolBox
 import os
 import argparse
@@ -91,7 +92,7 @@ class Agent:
         for tool in self.tools:
             if tool.__name__ == tool_choice:
                 response = tool(tool_input)
-
+                
                 print(colored(response.strip(), 'cyan'))
                 return
                 # return tool(tool_input)
@@ -113,7 +114,7 @@ if __name__ == "__main__":
         tools = []
         print('No tools are loaded!')
     else:
-        tools = [basic_calculator, reverse_string]
+        tools = [basic_calculator, reverse_string, get_current_weather]
         print('Loaded tools: ',  [tool.__name__ for tool in tools])
 
     # Uncomment below to run with OpenAI
