@@ -59,9 +59,9 @@ class OllamaModel:
             request_response_json = request_response.json()
             response = request_response_json['response']
             response_dict = json.loads(response.strip())
-
-            print(f"\n\nResponse from Ollama model: {response}")
-
+            print('-'*80)
+            print(f"\nResponse from Ollama model: {response.strip()}")
+            print('-'*80)
             return response_dict
         except requests.RequestException as e:
             response = {"error": f"Error in invoking model! {str(e)}"}

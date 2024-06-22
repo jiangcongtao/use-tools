@@ -11,7 +11,10 @@
             "program": "",
             "console": "integratedTerminal",
             "args": "-m agents.agent",
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}",
+            "env": {
+                // "WEATHER_API_KEY": ""
+            }
         }
     ]
 }

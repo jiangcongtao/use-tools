@@ -4,7 +4,7 @@ from models.openai_models import OpenAIModel
 from models.ollama_models import OllamaModel
 from tools.basic_calculator import basic_calculator
 from tools.reverser import reverse_string
-from tools.weather import get_current_weather
+from tools.weather import get_current_weather, get_local_time
 from toolbox.toolbox import ToolBox
 import os
 import argparse
@@ -86,19 +86,21 @@ class Agent:
         The response from executing the appropriate tool or the tool_input if no matching tool is found.
         """
         agent_response_dict = self.think(prompt)
-        tool_choice = agent_response_dict.get("tool_choice")
-        tool_input = agent_response_dict.get("tool_input")
+        if isinstance(agent_response_dict, dict): 
+            tool_choice = agent_response_dict.get("tool_choice")
+            tool_input = agent_response_dict.get("tool_input")
 
-        for tool in self.tools:
-            if tool.__name__ == tool_choice:
-                response = tool(tool_input)
-                
-                print(colored(response.strip(), 'cyan'))
-                return
-                # return tool(tool_input)
+            for tool in self.tools:
+                if tool.__name__ == tool_choice:
+                    response = tool(tool_input)
 
-        print(colored(tool_input, 'cyan'))
-        
+                    print(colored(response.strip(), 'cyan'))
+                    return
+                    # return tool(tool_input)
+
+            print(colored(agent_response_dict, 'cyan'))
+        else:
+            print(colored(tool_input, 'cyan'))
         return
 
 
@@ -114,7 +116,7 @@ if __name__ == "__main__":
         tools = []
         print('No tools are loaded!')
     else:
-        tools = [basic_calculator, reverse_string, get_current_weather]
+        tools = [basic_calculator, reverse_string, get_current_weather, get_local_time]
         print('Loaded tools: ',  [tool.__name__ for tool in tools])
 
     # Uncomment below to run with OpenAI
@@ -145,3 +147,4 @@ if __name__ == "__main__":
             break
     
         agent.work(prompt)
+        print('=='*40)
